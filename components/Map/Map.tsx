@@ -44,26 +44,8 @@ export default function Map() {
         source: "points-source",
         filter: ["has", "point_count"],
         paint: {
-          "circle-color": [
-            "step",
-            ["get", "point_count"],
-            "#bde0fe",
-            10,
-            "#4ea8de",
-            30,
-            "#1d4e89",
-          ],
-          "circle-radius": [
-            "step",
-            ["get", "point_count"],
-            15,
-            10,
-            22,
-            30,
-            30,
-          ],
-          "circle-stroke-width": 1,
-          "circle-stroke-color": "#ffffff",
+          "circle-color": ["step", ["get", "point_count"], "#bde0fe", 10, "#4ea8de", 30, "#1d4e89"],
+          "circle-radius": ["step", ["get", "point_count"], 15, 10, 22, 30, 30],
         },
       });
 
@@ -77,7 +59,7 @@ export default function Map() {
           "text-size": 13,
         },
         paint: {
-          "text-color": "#ffffff",
+          "text-color": "#fff",
         },
       });
 
@@ -90,7 +72,7 @@ export default function Map() {
           "circle-color": "#e63946",
           "circle-radius": 5,
           "circle-stroke-width": 1,
-          "circle-stroke-color": "#ffffff",
+          "circle-stroke-color": "#fff",
         },
       });
 
@@ -100,6 +82,7 @@ export default function Map() {
       map.addSource("polygons-source", {
         type: "geojson",
         data: "/data/polygons.geojson",
+        generateId: true,
       });
 
       map.addLayer({
@@ -108,7 +91,12 @@ export default function Map() {
         source: "polygons-source",
         paint: {
           "fill-color": "#2a6f97",
-          "fill-opacity": 0.35,
+          "fill-opacity": [
+            "case",
+            ["boolean", ["feature-state", "hover"], false],
+            0.7,
+            0.35,
+          ],
         },
       });
 
@@ -126,17 +114,23 @@ export default function Map() {
       // POPUPS - POINTS
       // =========================
       map.on("click", "unclustered-point", (e) => {
-        const feature = e.features?.[0];
-        if (!feature) return;
+        const f = e.features?.[0];
+        if (!f) return;
 
-        const props = feature.properties;
+        const props = f.properties;
+
+        map.flyTo({
+          center: (f.geometry as any).coordinates,
+          zoom: 14,
+          speed: 1.2,
+        });
 
         new mapboxgl.Popup()
-          .setLngLat((feature.geometry as any).coordinates)
+          .setLngLat((f.geometry as any).coordinates)
           .setHTML(`
-            <div style="font-size:13px; line-height:1.4;">
+            <div style="font-size:13px;">
               <strong>${props?.name}</strong><br/>
-              Category: ${props?.category}<br/>
+              ${props?.category}<br/>
               ${props?.description}
             </div>
           `)
@@ -147,23 +141,55 @@ export default function Map() {
       // POPUPS - POLYGONS
       // =========================
       map.on("click", "polygons-fill", (e) => {
-        const feature = e.features?.[0];
-        if (!feature) return;
+        const f = e.features?.[0];
+        if (!f) return;
 
-        const props = feature.properties;
-
-        const coordinates = (feature.geometry as any).coordinates[0][0];
+        const props = f.properties;
+        const coords = (f.geometry as any).coordinates[0][0];
 
         new mapboxgl.Popup()
-          .setLngLat(coordinates)
+          .setLngLat(coords)
           .setHTML(`
-            <div style="font-size:13px; line-height:1.4;">
+            <div style="font-size:13px;">
               <strong>${props?.name}</strong><br/>
-              Type: ${props?.type}<br/>
+              ${props?.type}<br/>
               ${props?.info}
             </div>
           `)
           .addTo(map);
+      });
+
+      // =========================
+      // HOVER HIGHLIGHT (POLYGONS)
+      // =========================
+      let hoveredId: any = null;
+
+      map.on("mousemove", "polygons-fill", (e) => {
+        if (!e.features?.length) return;
+
+        if (hoveredId !== null) {
+          map.setFeatureState(
+            { source: "polygons-source", id: hoveredId },
+            { hover: false }
+          );
+        }
+
+        hoveredId = e.features[0].id;
+
+        map.setFeatureState(
+          { source: "polygons-source", id: hoveredId },
+          { hover: true }
+        );
+      });
+
+      map.on("mouseleave", "polygons-fill", () => {
+        if (hoveredId !== null) {
+          map.setFeatureState(
+            { source: "polygons-source", id: hoveredId },
+            { hover: false }
+          );
+        }
+        hoveredId = null;
       });
     });
 
@@ -171,49 +197,57 @@ export default function Map() {
   }, []);
 
   // =========================
-  // VISIBILITY TOGGLE LOGIC
+  // TOGGLE LOGIC
   // =========================
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
 
-    const setVisibility = (id: string, visible: boolean) => {
+    const set = (id: string, v: boolean) => {
       if (map.getLayer(id)) {
-        map.setLayoutProperty(id, "visibility", visible ? "visible" : "none");
+        map.setLayoutProperty(id, "visibility", v ? "visible" : "none");
       }
     };
 
     if (mode === "all") {
-      setVisibility("clusters", true);
-      setVisibility("cluster-count", true);
-      setVisibility("unclustered-point", true);
-      setVisibility("polygons-fill", true);
-      setVisibility("polygons-outline", true);
+      set("clusters", true);
+      set("cluster-count", true);
+      set("unclustered-point", true);
+      set("polygons-fill", true);
+      set("polygons-outline", true);
     }
 
     if (mode === "points") {
-      setVisibility("clusters", true);
-      setVisibility("cluster-count", true);
-      setVisibility("unclustered-point", true);
-      setVisibility("polygons-fill", false);
-      setVisibility("polygons-outline", false);
+      set("clusters", true);
+      set("cluster-count", true);
+      set("unclustered-point", true);
+      set("polygons-fill", false);
+      set("polygons-outline", false);
     }
 
     if (mode === "polygons") {
-      setVisibility("clusters", false);
-      setVisibility("cluster-count", false);
-      setVisibility("unclustered-point", false);
-      setVisibility("polygons-fill", true);
-      setVisibility("polygons-outline", true);
+      set("clusters", false);
+      set("cluster-count", false);
+      set("unclustered-point", false);
+      set("polygons-fill", true);
+      set("polygons-outline", true);
     }
   }, [mode]);
 
   return (
     <div className={styles.wrapper}>
+      {/* CONTROLS */}
       <div className={styles.controls}>
         <button onClick={() => setMode("all")}>All</button>
         <button onClick={() => setMode("points")}>Points</button>
         <button onClick={() => setMode("polygons")}>Polygons</button>
+      </div>
+
+      {/* LEGEND */}
+      <div className={styles.legend}>
+        <div><span className={styles.p1}></span> Points</div>
+        <div><span className={styles.p2}></span> Clusters</div>
+        <div><span className={styles.p3}></span> Polygons</div>
       </div>
 
       <div ref={containerRef} className={styles.map} />

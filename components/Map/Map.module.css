@@ -9,31 +9,43 @@
   height: 100%;
 }
 
-/* UI Controls */
+/* CONTROLS */
 .controls {
   position: absolute;
   top: 12px;
   right: 12px;
   z-index: 10;
-
   display: flex;
-  gap: 8px;
-
-  background: rgba(255, 255, 255, 0.9);
-  padding: 8px;
+  gap: 6px;
+  background: rgba(255,255,255,0.9);
+  padding: 6px;
   border-radius: 8px;
-  backdrop-filter: blur(6px);
 }
 
 .controls button {
   border: none;
   padding: 6px 10px;
-  border-radius: 6px;
   cursor: pointer;
-  font-size: 12px;
-  background: white;
 }
 
-.controls button:hover {
-  background: #e6e6e6;
+/* LEGEND */
+.legend {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  background: white;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 12px;
 }
+
+.p1, .p2, .p3 {
+  width: 10px;
+  height: 10px;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+.p1 { background: #e63946; }
+.p2 { background: #4ea8de; }
+.p3 { background: #2a6f97; }
