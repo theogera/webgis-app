@@ -1,0 +1,31 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 1,
+        "name": "Observation Point Alpha",
+        "category": "Sensor",
+        "description": "Environmental monitoring station"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [23.7275, 37.9838]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 2,
+        "name": "Observation Point Beta",
+        "category": "Station",
+        "description": "Traffic monitoring location"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [23.7350, 37.9900]
+      }
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 3,
+        "name": "Restricted Zone A",
+        "type": "Protected Area",
+        "info": "Construction restricted"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [23.7200, 37.9800],
+            [23.7400, 37.9800],
+            [23.7400, 38.0000],
+            [23.7200, 38.0000],
+            [23.7200, 37.9800]
+          ]
+        ]
+      }
+    }
+  ]
+}

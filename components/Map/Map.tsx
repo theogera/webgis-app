@@ -15,22 +15,64 @@ export default function Map() {
 
     const map = new mapboxgl.Map({
       container: containerRef.current,
-
-      // 🎨 Choose your basemap style
       style: "mapbox://styles/mapbox/light-v11",
-
-      center: [23.7275, 37.9838], // Athens
+      center: [23.7275, 37.9838],
       zoom: 11,
     });
 
-    // 🧭 Fit map to bounds (better than fixed center)
-    const bounds = new mapboxgl.LngLatBounds(
-      [23.68, 37.95], // southwest
-      [23.78, 38.02]  // northeast
-    );
+    map.on("load", () => {
+      // =========================
+      // 📍 POINTS SOURCE
+      // =========================
+      map.addSource("points-source", {
+        type: "geojson",
+        data: "/data/points.geojson", // ✅ local file
+      });
 
-    map.fitBounds(bounds, {
-      padding: 20,
+      // =========================
+      // 🔵 POINTS LAYER
+      // =========================
+      map.addLayer({
+        id: "points-layer",
+        type: "circle",
+        source: "points-source",
+        paint: {
+          "circle-radius": 6,
+          "circle-color": "#e63946",
+        },
+      });
+
+      // =========================
+      // 🟩 POLYGONS SOURCE
+      // =========================
+      map.addSource("polygons-source", {
+        type: "geojson",
+        data: "/data/polygons.geojson", // ✅ local file
+      });
+
+      // =========================
+      // 🟦 POLYGONS LAYER (fill)
+      // =========================
+      map.addLayer({
+        id: "polygons-fill",
+        type: "fill",
+        source: "polygons-source",
+        paint: {
+          "fill-color": "#457b9d",
+          "fill-opacity": 0.4,
+        },
+      });
+
+      // OPTIONAL (but recommended): polygon borders
+      map.addLayer({
+        id: "polygons-outline",
+        type: "line",
+        source: "polygons-source",
+        paint: {
+          "line-color": "#1d3557",
+          "line-width": 2,
+        },
+      });
     });
 
     mapRef.current = map;
