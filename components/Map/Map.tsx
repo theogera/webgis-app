@@ -14,6 +14,9 @@ export default function Map() {
 
   const [mode, setMode] = useState<Mode>("all");
 
+  // =========================
+  // INIT MAP
+  // =========================
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
 
@@ -38,17 +41,35 @@ export default function Map() {
         clusterRadius: 50,
       });
 
+      // Clusters
       map.addLayer({
         id: "clusters",
         type: "circle",
         source: "points-source",
         filter: ["has", "point_count"],
         paint: {
-          "circle-color": ["step", ["get", "point_count"], "#a8dadc", 10, "#457b9d", 30, "#1d3557"],
-          "circle-radius": ["step", ["get", "point_count"], 15, 10, 22, 30, 30],
+          "circle-color": [
+            "step",
+            ["get", "point_count"],
+            "#a8dadc",
+            10,
+            "#457b9d",
+            30,
+            "#1d3557",
+          ],
+          "circle-radius": [
+            "step",
+            ["get", "point_count"],
+            15,
+            10,
+            22,
+            30,
+            30,
+          ],
         },
       });
 
+      // Cluster count
       map.addLayer({
         id: "cluster-count",
         type: "symbol",
@@ -63,6 +84,7 @@ export default function Map() {
         },
       });
 
+      // Single points
       map.addLayer({
         id: "unclustered-point",
         type: "circle",
@@ -114,7 +136,7 @@ export default function Map() {
         new mapboxgl.Popup()
           .setLngLat((feature.geometry as any).coordinates)
           .setHTML(`
-            <div style="font-size:14px;">
+            <div style="font-size:14px; line-height:1.4;">
               <strong>${props?.name}</strong><br/>
               Category: ${props?.category}<br/>
               ${props?.description}
@@ -137,7 +159,7 @@ export default function Map() {
         new mapboxgl.Popup()
           .setLngLat(coordinates)
           .setHTML(`
-            <div style="font-size:14px;">
+            <div style="font-size:14px; line-height:1.4;">
               <strong>${props?.name}</strong><br/>
               Type: ${props?.type}<br/>
               ${props?.info}
@@ -151,7 +173,7 @@ export default function Map() {
   }, []);
 
   // =========================
-  // VISIBILITY TOGGLE LOGIC
+  // VISIBILITY TOGGLE
   // =========================
   useEffect(() => {
     const map = mapRef.current;
@@ -190,12 +212,14 @@ export default function Map() {
 
   return (
     <div className={styles.wrapper}>
+      {/* Controls */}
       <div className={styles.controls}>
         <button onClick={() => setMode("all")}>All</button>
         <button onClick={() => setMode("points")}>Points</button>
         <button onClick={() => setMode("polygons")}>Polygons</button>
       </div>
 
+      {/* Map */}
       <div ref={containerRef} className={styles.map} />
     </div>
   );
