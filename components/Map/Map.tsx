@@ -15,71 +15,25 @@ export default function Map() {
 
     const map = new mapboxgl.Map({
       container: containerRef.current,
-      style: "mapbox://styles/mapbox/streets-v12",
+
+      // 🎨 Choose your basemap style
+      style: "mapbox://styles/mapbox/light-v11",
+
       center: [23.7275, 37.9838], // Athens
       zoom: 11,
     });
 
-    mapRef.current = map;
+    // 🧭 Fit map to bounds (better than fixed center)
+    const bounds = new mapboxgl.LngLatBounds(
+      [23.68, 37.95], // southwest
+      [23.78, 38.02]  // northeast
+    );
 
-    map.on("load", () => {
-      // POINTS SOURCE
-      map.addSource("points", {
-        type: "geojson",
-        data: "/data/points.geojson",
-      });
-
-      // POINTS LAYER
-      map.addLayer({
-        id: "points-layer",
-        type: "circle",
-        source: "points",
-        paint: {
-          "circle-radius": 6,
-          "circle-color": "#e63946",
-        },
-      });
-
-      // POLYGONS SOURCE
-      map.addSource("polygons", {
-        type: "geojson",
-        data: "/data/polygons.geojson",
-      });
-
-      // POLYGONS LAYER
-      map.addLayer({
-        id: "polygons-layer",
-        type: "fill",
-        source: "polygons",
-        paint: {
-          "fill-color": "#457b9d",
-          "fill-opacity": 0.4,
-        },
-      });
-
-      // POPUP INTERACTION
-      map.on("click", "points-layer", (e) => {
-        const feature = e.features?.[0];
-        if (!feature) return;
-
-        const coordinates = (feature.geometry as any).coordinates.slice();
-        const name = feature.properties?.name;
-
-        new mapboxgl.Popup()
-          .setLngLat(coordinates)
-          .setHTML(`<strong>${name}</strong>`)
-          .addTo(map);
-      });
-
-      // CURSOR POINTER
-      map.on("mouseenter", "points-layer", () => {
-        map.getCanvas().style.cursor = "pointer";
-      });
-
-      map.on("mouseleave", "points-layer", () => {
-        map.getCanvas().style.cursor = "";
-      });
+    map.fitBounds(bounds, {
+      padding: 20,
     });
+
+    mapRef.current = map;
 
     return () => map.remove();
   }, []);
