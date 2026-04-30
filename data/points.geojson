@@ -1,0 +1,21 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "name": "Acropolis" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [23.7257, 37.9715]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Syntagma Square" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [23.7348, 37.9755]
+      }
+    }
+  ]
+}
