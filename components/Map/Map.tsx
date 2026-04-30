@@ -14,9 +14,6 @@ export default function Map() {
 
   const [mode, setMode] = useState<Mode>("all");
 
-  // =========================
-  // INIT MAP
-  // =========================
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
 
@@ -41,7 +38,6 @@ export default function Map() {
         clusterRadius: 50,
       });
 
-      // Clusters
       map.addLayer({
         id: "clusters",
         type: "circle",
@@ -51,11 +47,11 @@ export default function Map() {
           "circle-color": [
             "step",
             ["get", "point_count"],
-            "#a8dadc",
+            "#bde0fe",
             10,
-            "#457b9d",
+            "#4ea8de",
             30,
-            "#1d3557",
+            "#1d4e89",
           ],
           "circle-radius": [
             "step",
@@ -66,10 +62,11 @@ export default function Map() {
             30,
             30,
           ],
+          "circle-stroke-width": 1,
+          "circle-stroke-color": "#ffffff",
         },
       });
 
-      // Cluster count
       map.addLayer({
         id: "cluster-count",
         type: "symbol",
@@ -84,7 +81,6 @@ export default function Map() {
         },
       });
 
-      // Single points
       map.addLayer({
         id: "unclustered-point",
         type: "circle",
@@ -92,7 +88,9 @@ export default function Map() {
         filter: ["!", ["has", "point_count"]],
         paint: {
           "circle-color": "#e63946",
-          "circle-radius": 6,
+          "circle-radius": 5,
+          "circle-stroke-width": 1,
+          "circle-stroke-color": "#ffffff",
         },
       });
 
@@ -109,8 +107,8 @@ export default function Map() {
         type: "fill",
         source: "polygons-source",
         paint: {
-          "fill-color": "#457b9d",
-          "fill-opacity": 0.4,
+          "fill-color": "#2a6f97",
+          "fill-opacity": 0.35,
         },
       });
 
@@ -119,7 +117,7 @@ export default function Map() {
         type: "line",
         source: "polygons-source",
         paint: {
-          "line-color": "#1d3557",
+          "line-color": "#184e77",
           "line-width": 2,
         },
       });
@@ -136,7 +134,7 @@ export default function Map() {
         new mapboxgl.Popup()
           .setLngLat((feature.geometry as any).coordinates)
           .setHTML(`
-            <div style="font-size:14px; line-height:1.4;">
+            <div style="font-size:13px; line-height:1.4;">
               <strong>${props?.name}</strong><br/>
               Category: ${props?.category}<br/>
               ${props?.description}
@@ -159,7 +157,7 @@ export default function Map() {
         new mapboxgl.Popup()
           .setLngLat(coordinates)
           .setHTML(`
-            <div style="font-size:14px; line-height:1.4;">
+            <div style="font-size:13px; line-height:1.4;">
               <strong>${props?.name}</strong><br/>
               Type: ${props?.type}<br/>
               ${props?.info}
@@ -173,7 +171,7 @@ export default function Map() {
   }, []);
 
   // =========================
-  // VISIBILITY TOGGLE
+  // VISIBILITY TOGGLE LOGIC
   // =========================
   useEffect(() => {
     const map = mapRef.current;
@@ -212,14 +210,12 @@ export default function Map() {
 
   return (
     <div className={styles.wrapper}>
-      {/* Controls */}
       <div className={styles.controls}>
         <button onClick={() => setMode("all")}>All</button>
         <button onClick={() => setMode("points")}>Points</button>
         <button onClick={() => setMode("polygons")}>Polygons</button>
       </div>
 
-      {/* Map */}
       <div ref={containerRef} className={styles.map} />
     </div>
   );
