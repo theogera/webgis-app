@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import styles from "./Map.module.css";
 
@@ -10,6 +10,9 @@ export default function Map() {
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
+  const [mode, setMode] = useState<"all" | "points" | "polygons">("all");
+
+  // 🗺️ Initialize map
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
 
@@ -21,17 +24,12 @@ export default function Map() {
     });
 
     map.on("load", () => {
-      // =========================
-      // 📍 POINTS SOURCE
-      // =========================
+      // POINTS
       map.addSource("points-source", {
         type: "geojson",
-        data: "/data/points.geojson", // ✅ local file
+        data: "/data/points.geojson",
       });
 
-      // =========================
-      // 🔵 POINTS LAYER
-      // =========================
       map.addLayer({
         id: "points-layer",
         type: "circle",
@@ -42,17 +40,12 @@ export default function Map() {
         },
       });
 
-      // =========================
-      // 🟩 POLYGONS SOURCE
-      // =========================
+      // POLYGONS
       map.addSource("polygons-source", {
         type: "geojson",
-        data: "/data/polygons.geojson", // ✅ local file
+        data: "/data/polygons.geojson",
       });
 
-      // =========================
-      // 🟦 POLYGONS LAYER (fill)
-      // =========================
       map.addLayer({
         id: "polygons-fill",
         type: "fill",
@@ -63,7 +56,6 @@ export default function Map() {
         },
       });
 
-      // OPTIONAL (but recommended): polygon borders
       map.addLayer({
         id: "polygons-outline",
         type: "line",
@@ -80,5 +72,50 @@ export default function Map() {
     return () => map.remove();
   }, []);
 
-  return <div ref={containerRef} className={styles.map} />;
+  // 🎛️ Handle visibility changes
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    const setVisibility = (layer: string, visible: boolean) => {
+      if (map.getLayer(layer)) {
+        map.setLayoutProperty(
+          layer,
+          "visibility",
+          visible ? "visible" : "none"
+        );
+      }
+    };
+
+    if (mode === "all") {
+      setVisibility("points-layer", true);
+      setVisibility("polygons-fill", true);
+      setVisibility("polygons-outline", true);
+    }
+
+    if (mode === "points") {
+      setVisibility("points-layer", true);
+      setVisibility("polygons-fill", false);
+      setVisibility("polygons-outline", false);
+    }
+
+    if (mode === "polygons") {
+      setVisibility("points-layer", false);
+      setVisibility("polygons-fill", true);
+      setVisibility("polygons-outline", true);
+    }
+  }, [mode]);
+
+  return (
+    <div className={styles.wrapper}>
+      {/* 🎛️ UI Controls */}
+      <div className={styles.controls}>
+        <button onClick={() => setMode("all")}>All</button>
+        <button onClick={() => setMode("points")}>Points</button>
+        <button onClick={() => setMode("polygons")}>Polygons</button>
+      </div>
+
+      <div ref={containerRef} className={styles.map} />
+    </div>
+  );
 }
