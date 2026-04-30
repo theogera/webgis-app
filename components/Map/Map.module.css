@@ -22,10 +22,23 @@
   border-radius: 8px;
 }
 
+.controls button:hover {
+  color: #321f20;
+}
+
 .controls button {
-  border: none;
+  /*border: none;
   padding: 6px 10px;
+  cursor: pointer;*/
+  padding: 8px 12px;
+  margin-right: 8px;
   cursor: pointer;
+}
+
+.activeButton {
+  background: #e63946;
+  color: white;
+  border: none;
 }
 
 /* LEGEND */
@@ -48,4 +61,4 @@
 
 .p1 { background: #e63946; }
 .p2 { background: #4ea8de; }
-.p3 { background: #2a6f97; }
+.p3 { background: #161c1f; }
