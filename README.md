@@ -1,36 +1,189 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🌍 WebGIS Application (Next.js + Mapbox GL JS)
 
-## Getting Started
+A WebGIS application built with **Next.js** and **Mapbox GL JS** that visualizes geospatial data (points and polygons), supports clustering, interactive layers, and rich map interactions.
 
-First, run the development server:
+---
+
+## 🚀 Features
+
+* Interactive Map using Mapbox GL JS
+* GeoJSON data rendering (local files)
+* Point clustering with dynamic counts
+* Polygon visualization with outlines and hover effects
+* Layer toggle system (All / Points / Polygons)
+* Popups for both points and polygons
+* Fly-to animation on point click
+* Polygon popup positioned at top-center edge
+* Hover highlight for polygons
+* Cursor interaction feedback
+* Responsive UI layout
+* Map legend for better UX
+
+---
+
+## 🧰 Tech Stack
+
+* Next.js (App Router)
+* Mapbox GL JS
+* TypeScript
+* CSS Modules
+
+---
+
+## 📂 Project Structure
+
+```
+components/
+└── Map/
+    ├── Map.tsx
+    ├── mapSetup.ts
+    ├── mapLayers.ts
+    ├── mapInteractions.ts
+    └── Map.module.css
+
+public/
+└── data/
+    ├── points.geojson
+    └── polygons.geojson
+```
+
+---
+
+## ⚙️ Setup Instructions
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/theogera/webgis-app.git
+cd webgis-app
+```
+
+---
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+---
+
+### 3. Add Mapbox token
+
+Create a `.env.local` file:
+
+```bash
+NEXT_PUBLIC_MAPBOX_TOKEN=your_mapbox_token_here
+```
+
+Get your token from:
+[https://account.mapbox.com/](https://account.mapbox.com/)
+
+---
+
+### 4. Add GeoJSON data
+
+Place your files here:
+
+```
+/public/data/points.geojson
+/public/data/polygons.geojson
+```
+
+---
+
+### 5. Run development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 🧠 Architecture Overview
 
-To learn more about Next.js, take a look at the following resources:
+### 🔹 Modular Map Design
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The map logic is split into 3 parts:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+* `mapSetup.ts` → Initializes the map
+* `mapLayers.ts` → Adds sources and layers
+* `mapInteractions.ts` → Handles clicks, hover, popups
 
-## Deploy on Vercel
+This improves:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+* readability
+* scalability
+* maintainability
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+### 🔹 Why Mapbox GL JS
+
+* Native support for GeoJSON
+* Built-in clustering
+* High-performance rendering
+* Rich interaction system
+
+---
+
+### 🔹 Data Strategy
+
+GeoJSON files are stored in `/public` to simulate a real GIS dataset without backend complexity.
+
+---
+
+### 🔹 UI Decisions
+
+* Minimal UI focused on map interaction
+* Floating controls for layer switching
+* Legend for clarity
+* Hover + click feedback for usability
+
+---
+
+## ✨ Key Features Explained
+
+### 📍 Point Interaction
+
+* Click zooms to feature
+* Popup shows properties
+* Clustering expands smoothly
+
+### 🟦 Polygon Interaction
+
+* Hover highlights polygon
+* Click shows popup at top edge center
+* Styled outlines for clarity
+
+---
+
+## 🔮 Future Improvements
+
+* Sidebar instead of popups for details
+* Search functionality (features / locations)
+* Category filtering (points/polygons)
+* Dark/light basemap switch
+* Improved polygon centroid calculation (true geometric center)
+* Unit testing for map logic
+* Backend integration (PostGIS / GeoServer)
+
+---
+
+## 📌 Notes
+
+* Built as a WebGIS learning project
+* Focus on Mapbox GL JS capabilities and modular architecture
+* Fully client-side rendering
+
+---
+
+## 👤 Author
+
+Developed as a WebGIS exercise using **Next.js + Mapbox GL JS**
